@@ -77,7 +77,7 @@ domove:
     out 0x60,al
     mov ax,0x0001       
     lmsw ax       
-    jmp dword 0x0008:0x12C009
+    jmp dword 0x0008:0x12C000
 gdt:
     dd 0, 0
     dw 0xFFFF      
