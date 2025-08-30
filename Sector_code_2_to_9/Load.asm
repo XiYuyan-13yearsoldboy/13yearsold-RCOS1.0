@@ -5,6 +5,26 @@ setting:
     mov ax,0x94E0
     mov ds, ax
     jmp memory_inf
+hd_kernel_move:
+    mov di, 16384          
+    mov word [dap_seg], 0   
+    mov dword [dap_lba], 1228809 
+    mov dword [dap_lba+4], 0 
+move_loop:
+    call move      
+    jc move_loop            
+    add word [dap_seg], 0x1000  
+    add dword [dap_lba], 128    
+    adc dword [dap_lba+4], 0    
+    dec di
+    jnz move_loop      
+    ret 
+move:
+    mov si, dap          
+    mov ah, 0x42        
+    mov dl, [boot_drive] 
+    int 0x13                    
+    ret
 memory_inf:
     mov ah,0x88
     int 0x15
@@ -55,6 +75,9 @@ hd_sec_inf:
     xor di, di
     mov cx,4
     rep movsd
+    call hd_kernel_move      
+    jnc domove 
+    jmp hd_sec_inf
     jnc domove
     jmp hd_sec_inf
 domove:
@@ -77,7 +100,14 @@ domove:
     out 0x60,al
     mov ax,0x0001       
     lmsw ax       
-    jmp dword 0x0008:0x12C000
+    jmp dword 0x0008:0x0000
+dap:
+    db 0x10        
+    db 0          
+    dap_count: dw 128  
+    dap_offset: dw 0    
+    dap_seg:    dw 0  
+    dap_lba:    dq 0
 gdt:
     dd 0, 0
     dw 0xFFFF      
