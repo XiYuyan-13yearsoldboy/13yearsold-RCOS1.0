@@ -21,7 +21,6 @@ H[内核层] --> I[加载LOGO，重新设置GDT,IDT,开启分页]
 style G fill:#FF4136,stroke:#000;
 style I fill:#FF4136,stroke:#000;
 style E fill:#1DAFE4,stroke:#000;
-style G fill:#0F0,stroke:#000;
 style B fill:#0F0,stroke:#000;
 style D fill:#0F0,stroke:#000;
 ```
