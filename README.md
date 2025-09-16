@@ -18,7 +18,7 @@ C --> E[EDK2固件]
 E --> F[内核层]
 G --> F
 H[内核层] --> I[加载LOGO，重新设置GDT,IDT,开启分页] 
-style D fill:#FF4136,stroke:#000;
+style G fill:#FF4136,stroke:#000;
 style I fill:#FF4136,stroke:#000;
 style E fill:#1DAFE4,stroke:#000;
 style G fill:#0F0,stroke:#000;
