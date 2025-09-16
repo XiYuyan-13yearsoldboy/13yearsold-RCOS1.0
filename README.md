@@ -7,7 +7,7 @@
 # 项目进程
 正在开发，约7~14天更新仓库
 ## 目前项目流程
-红色代表正在进行的项目，绿色代表已完成项目
+红色代表正在进行/修改的项目，绿色代表已完成项目,蓝色代表暂缓
 ```mermaid
 graph LR 
 A[引导层] --> B[BIOS/实模式]
@@ -17,8 +17,10 @@ D --> G[拓展引导扇区LBA1~8，进入保护模式]
 C --> E[EDK2固件]
 E --> F[内核层]
 G --> F
-style E fill:#FF4136,stroke:#000;
-style D fill:#0F0,stroke:#000;
+H[内核层] --> I[加载LOGO，重新设置GDT,IDT,开启分页] 
+style D fill:#FF4136,stroke:#000;
+style I fill:#FF4136,stroke:#000;
+style E fill:#1DAFE4,stroke:#000;
 style G fill:#0F0,stroke:#000;
 style B fill:#0F0,stroke:#000;
 ```
