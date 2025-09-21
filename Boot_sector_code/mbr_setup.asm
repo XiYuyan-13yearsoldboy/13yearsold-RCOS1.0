@@ -21,6 +21,16 @@ dev:
     mov ss,ax
     mov sp,0xFFF0
 setup:
+    mov ax,0x0003
+    int 0x10
+    push ds
+    mov ax,0xB800 
+    mov es,ax
+    mov di,0     
+    mov si,msg   
+    mov cx,11    
+    call _loop
+    pop ds
     mov dl, [boot_drive]
     mov dh, 0x00 
     mov cx,0x0001
@@ -39,20 +49,13 @@ verify_2:
     jmp 0x9520:0
 error:
     jmp $
+_loop:
+movsb         
+mov byte [es:di],0x07 
+inc di
+loop _loop
 boot_drive: db 0
 count: db 0
-db 0x80                   
-db 0xFE, 0xFF, 0xFF       
-db 0x0C                  
-db 0xFE, 0xFF, 0xFF      
-dd 9                    
-dd 1228800                
-
-db 0x00                   
-db 0xFE, 0xFF, 0xFF 
-db 0x06                   
-db 0xFE, 0xFF, 0xFF 
-dd 1228809 
-dd 2097152
+msg db "Loading..."
 times 510 - ($ - $$) db 0 
 dw 0xAA55
