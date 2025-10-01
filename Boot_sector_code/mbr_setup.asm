@@ -5,15 +5,15 @@ bios_main:
     cli
     cld
     mov [boot_drive], dl
-    mov ax, 0x7C00
+    mov ax, 0x07C0
     mov ds, ax
-    mov ax, 0x9500
+    mov ax, 0x0820
     mov es, ax
     mov cx, 128
     xor si, si
     xor di, di
     rep movsd
-    jmp 0x9500:dev
+    jmp 0x0820:dev
 dev:
     mov ax,cs
     mov ds,ax
@@ -21,19 +21,9 @@ dev:
     mov ss,ax
     mov sp,0xFFF0
 setup:
-    mov ax,0x0003
-    int 0x10
-    push ds
-    mov ax,0xB800 
-    mov es,ax
-    mov di,0     
-    mov si,msg   
-    mov cx,11    
-    call _loop
-    pop ds
     mov dl, [boot_drive]
     mov dh, 0x00 
-    mov cx,0x0001
+    mov cx,0x0002
     mov bx,0x0200
     mov ax,0x0208
     mov byte [count], 3
@@ -44,18 +34,12 @@ verify_1:
     jz error       
     jmp verify_1
 verify_2:
-    cmp al, 8       
-    jne error     
-    jmp 0x9520:0
+    cmp al,0       
+    je error     
+    jmp 0x0840:0
 error:
     jmp $
-_loop:
-movsb         
-mov byte [es:di],0x07 
-inc di
-loop _loop
 boot_drive: db 0
 count: db 0
-msg db "Loading..."
 times 510 - ($ - $$) db 0 
 dw 0xAA55
