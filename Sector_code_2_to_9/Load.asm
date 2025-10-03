@@ -5,6 +5,68 @@ setting:
     mov ax,0x0800
     mov ds, ax 
     jmp memory_inf
+init_vbe:
+    pusha 
+    push ds 
+    push es 
+    mov ax, 0x0300       
+    mov es, ax 
+    xor di, di          
+    mov ax, 0x4F00
+    int 0x10
+    cmp ax, 0x004F  
+    jne .vbe_error
+    mov ax, [es:0x04]  
+    cmp ax, 0x0200 
+    jb .vbe_error
+    mov si, [es:0x0E]  
+    mov ax, [es:0x10] 
+    mov ds, ax         
+    mov ax, 0x0320     
+    mov es, ax
+    xor di, di       
+.search_mode:
+    lodsw          
+    mov cx, ax
+    cmp cx, 0xFFFF       
+    je .end_search
+    mov ax, 0x4F01 
+    int 0x10
+    cmp ax, 0x004F
+    jne .next_mode 
+    test word [es:0x00], 0x0081  
+    jz .next_mode
+    cmp word [es:0x12], 1024  
+    jne .next_mode 
+    cmp word [es:0x14], 768   
+    jne .next_mode 
+    cmp byte [es:0x19], 32 
+    jne .next_mode 
+    mov bx, cx
+    or bx, 0x4000         
+    mov ax, 0x4F02 
+    int 0x10
+    cmp ax, 0x004F 
+    je .vbe_success 
+.next_mode:
+    jmp .search_mode 
+.end_search:
+    mov ax, 0x0003   
+    int 0x10
+    jmp .vbe_exit 
+.vbe_error:
+    jmp .vbe_exit 
+.vbe_success:
+    mov ax, 0x0330
+    mov ds, ax 
+    mov [0x00], cx 
+    mov eax, [es:0x28]  
+    mov [0x04], eax 
+.vbe_exit:
+    pop es
+    pop ds
+    popa
+    ret 
 hd_kernel_move:
     mov di, 16384          
     mov word [dap_seg], 0x1000  
@@ -75,6 +137,7 @@ hd_sec_inf:
     xor di, di
     mov cx,4
     rep movsd 
+    call init_vbe
     call hd_kernel_move      
     jnc .16to32 
     jmp hd_sec_inf  
@@ -88,6 +151,9 @@ hd_sec_inf:
     mov ax,0x0001       
     lmsw ax       
     jmp dword 0x0008:0x10000
+vbe_controller_info equ 0x3000
+vbe_mode_info       equ 0x3200
+vbe_selected_mode   equ 0x3300
 dap:
     db 0x10        
     db 0          
