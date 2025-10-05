@@ -6,14 +6,14 @@ section .text
     global setting
 setting:
     mov [boot_drive], dl 
-    mov ax,0x0800
+    mov ax,0x0900
     mov ds, ax 
     jmp memory_inf
 init_vbe:
     pusha 
     push ds 
     push es 
-    mov ax, 0x0300       
+    mov ax, 0x0600       
     mov es, ax 
     xor di, di          
     mov ax, 0x4F00
@@ -26,7 +26,7 @@ init_vbe:
     mov si, [es:0x0E]  
     mov ax, [es:0x10] 
     mov ds, ax         
-    mov ax, 0x0320     
+    mov ax, 0x0620     
     mov es, ax
     xor di, di       
 .search_mode:
@@ -47,9 +47,8 @@ init_vbe:
     cmp byte [es:0x19], 32 
     jne .next_mode 
     mov bx, cx
-    or bx, 0x4000         
-    mov ax, 0x4F02 
-    int 0x10
+    or bx, 0x4000  
+    mov ax, 0x4F02
     cmp ax, 0x004F 
     je .vbe_success 
 .next_mode:
@@ -61,7 +60,7 @@ init_vbe:
 .vbe_error:
     jmp .vbe_exit 
 .vbe_success:
-    mov ax, 0x0330
+    mov ax, 0x0630
     mov ds, ax 
     mov [0x00], cx 
     mov eax, [es:0x28]  
@@ -92,6 +91,9 @@ move:
     int 0x13                    
     ret 
 memory_inf:
+    mov ax,0x5000
+    mov ds,ax
+    mov es,ax
     mov ah,0x88 
     int 0x15
     mov [0],ax 
@@ -155,9 +157,9 @@ hd_sec_inf:
     mov ax,0x0001       
     lmsw ax       
     jmp dword 0x0008:0x10000
-vbe_controller_info equ 0x3000
-vbe_mode_info       equ 0x3200
-vbe_selected_mode   equ 0x3300
+vbe_controller_info equ 0x0600
+vbe_mode_info       equ 0x0620
+vbe_selected_mode   equ 0x0630
 dap:
     db 0x10        
     db 0          
@@ -183,6 +185,6 @@ idtr_i:
     dw 0 
     dw 0,0
 gdtr_i:
-    dw 0x800
-    dw 512+gdt,0x9 
+    dw 0x17
+    dw 0x7000,0
 boot_drive: db 0 
