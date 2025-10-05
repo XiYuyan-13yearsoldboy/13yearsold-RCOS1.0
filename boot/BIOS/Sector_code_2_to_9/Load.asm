@@ -1,3 +1,7 @@
+; this is a boot code to load kernel from hard disk to memory
+;it's will set vbe mode,collect memory and video card infomation
+;it's will enable protected mode and jump to kernel
+; it's a open source file for RCOS1.0
 section .text
     global setting
 setting:

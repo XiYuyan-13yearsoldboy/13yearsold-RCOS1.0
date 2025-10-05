@@ -1,3 +1,6 @@
+;this is a boot sector code for RCOS1.0
+;it will load 8 sector from disk to memory and jump to it
+;this is a file to open OS's gate and open source it
 section .text 
 global bios_main 
 bits 16
