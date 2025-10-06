@@ -7,7 +7,7 @@ It's great to write a OS and open source it
 */
 #include <stdint.h>
 #include <stdio.h>
-uint32_t *address = (uint32_t*)0x4004F000;
+uint32_t *PG_address = (uint32_t*)0x4004F000;
 struct v_m_i{
     uint16_t mode;
     uint16_t w;
@@ -28,7 +28,7 @@ void set_idt(){
 }
 void paging_init(){
     for(int i=0;i<1024;i++){
-        address[i] = (0x00001000*(i+1)) | 0x3;
+        PG_address[i] = (0x00001000*(i+1)) | 0x3;
     } //set page directory table
     for(int i=0;i<1024;i++){
         page_table_init(i);
@@ -36,7 +36,7 @@ void paging_init(){
     extern void paging_enable();
 }
 void main(){
-    asm ("movl $0xA0000000, %esp");
+    asm ("lss esp,0xC0000000");
     load_logo();
     set_gdt();
     set_idt();
