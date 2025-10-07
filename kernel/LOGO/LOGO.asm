@@ -3,6 +3,10 @@ section .text
 jmp_main:
     call _main
 gdt_init:
+    mov edi, 0x1000 
+    mov esi, gdt
+    mov ecx, (gdt_end - gdt)/4 
+    rep movsd
     lgdt [gdtr_inf]
     ret
 paging_enable:
@@ -19,11 +23,9 @@ gdt:
     dd 0x00000000
     dd 0x00000000
 
-    dd 0xC0000000
-    dd 0x00C09A00
+    dd 0x0000FFFF
+    dd 0x00CF9A00
 
-    dd 0x00000000
-    dd 0x70C09200
-
-    dd 0x00000000
-    dd 0xF0C09200
+    dd 0x0000FFFF
+    dd 0x00CF9200
+gdt_end:
