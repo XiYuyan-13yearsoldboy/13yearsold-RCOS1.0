@@ -2,12 +2,20 @@ section .text
     global jmp_main
 jmp_main:
     call _main
-gdt_init:
-    mov edi, 0x1000 
-    mov esi, gdt
-    mov ecx, (gdt_end - gdt)/4 
-    rep movsd
+gdt_init: 
+    mov eax,0x00001000
+    mov dword [eax],0x00000000
+    mov dword [eax+4],0x00000000
+    mov dword [eax+8],0x0000FFFF
+    mov dword [eax+12],0x00CF9A00
+    mov dword [eax+16],0x0000FFFF
+    mov dword [eax+20],0x00CF9200
     lgdt [gdtr_inf]
+    ret
+idt_init:
+    mov eax,0x00007000
+    mov cx,256
+    lidt [idtr_inf]
     ret
 paging_enable:
     mov eax,0x4004F000
@@ -17,15 +25,12 @@ paging_enable:
     mov cr0, eax
     ret
 gdtr_inf:
-    dw 0xFF
+    dw 0x00FF
     dd 0x00001000
-gdt:
-    dd 0x00000000
-    dd 0x00000000
-
-    dd 0x0000FFFF
-    dd 0x00CF9A00
-
-    dd 0x0000FFFF
-    dd 0x00CF9200
-gdt_end:
+idtr_inf:
+    dw 0x07FF
+    dd 0x00007000
+jmp_fun:
+    lss esp,0xC0000000
+    push _kernel_main
+    ret

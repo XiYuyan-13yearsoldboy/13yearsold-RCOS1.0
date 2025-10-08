@@ -21,7 +21,7 @@ struct v_m_i{
 void page_table_init(int x){
     uint32_t *pg_t_address = (uint32_t*)((x+1)*4*1024+0x4004F000);
     for(int i=0;i<1024;i++){
-        pg_t_address[i] = (0x00001000*i+0x00001000*x) | 0x3;
+        pg_t_address[i] = (0x00001000*i+0x00400000*x) | 0x3;
     }
 }
 void load_logo(){
@@ -38,9 +38,8 @@ void paging_init(){
     paging_enable();
 }
 void main(){
-    asm ("lss esp,0xC0000000");
     load_logo();
     gdt_init();
-    set_idt();
+    idt_init();
     paging_init();
 }
