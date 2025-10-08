@@ -12,9 +12,10 @@ gdt_init:
     mov dword [eax+20],0x00CF9200
     lgdt [gdtr_inf]
     ret
-idt_init:
-    mov eax,0x00007000
-    mov cx,256
+idt_init:  
+    lea eax,default_int
+    mov bx,ax
+    shr eax,16
     lidt [idtr_inf]
     ret
 paging_enable:
@@ -30,7 +31,15 @@ gdtr_inf:
 idtr_inf:
     dw 0x07FF
     dd 0x00007000
+idt:
+    dd 
+    dd 
+default_int:
 jmp_fun:
-    lss esp,0xC0000000
-    push _kernel_main
+    lss esp,[stark_inf]
     ret
+stark_inf:
+    dd 0XC0000000
+    dw 0x0010
+    dw 0x0000
+times 1048576 - ($ - $$) db 0
