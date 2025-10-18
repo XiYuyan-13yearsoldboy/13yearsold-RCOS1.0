@@ -6,7 +6,7 @@ section .text
     global setting
 setting:
     mov [boot_drive], dl 
-    mov ax,0x0900
+    mov ax,0x0500
     mov ds, ax 
     jmp memory_inf
 init_vbe:
