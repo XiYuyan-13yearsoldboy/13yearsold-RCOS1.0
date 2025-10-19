@@ -2,6 +2,7 @@ section .text
     global jmp_main
 jmp_main:
     call _main
+    lss esp,[stark_inf]
 gdt_init: 
     mov eax,0x00001000
     mov dword [eax],0x00000000
@@ -16,6 +17,7 @@ idt_init:
     lea eax,default_int
     mov bx,ax
     shr eax,16
+    
     lidt [idtr_inf]
     ret
 paging_enable:
@@ -32,12 +34,9 @@ idtr_inf:
     dw 0x07FF
     dd 0x00007000
 idt:
-    dd 
-    dd 
+    dd bx,0x0008
+    dd ax,0x8E00
 default_int:
-jmp_fun:
-    lss esp,[stark_inf]
-    ret
 stark_inf:
     dd 0XC0000000
     dw 0x0010

@@ -10,8 +10,6 @@ It's great to write a OS and open source it
 extern void gdt_init();
 extern void paging_enable();
 uint32_t *PG_address = (uint32_t*)0x4004F000;
-uint32_t *GDT_address = (uint32_t*)0x00001000;
-uint32_t *IDT_address = (uint32_t*)0x00007000;
 struct v_m_i{
     uint16_t mode;
     uint16_t w;
@@ -19,7 +17,7 @@ struct v_m_i{
     uint8_t bitcolor;
 }video_mode_inf;
 void page_table_init(int x){
-    uint32_t *pg_t_address = (uint32_t*)((x+1)*4*1024+0x4004F000);
+    uint32_t *pg_t_address = (uint32_t*)(0x00001000*(x+1)+0x4004F000);
     for(int i=0;i<1024;i++){
         pg_t_address[i] = (0x00001000*i+0x00400000*x) | 0x3;
     }
@@ -30,9 +28,7 @@ void set_idt(){
 }
 void paging_init(){
     for(int i=0;i<1024;i++){
-        PG_address[i] = (0x00001000*(i+1)) | 0x3;
-    } //set page directory table
-    for(int i=0;i<1024;i++){
+        PG_address[i] = (0x00001000*(i+1)+0x4004F000) | 0x3;
         page_table_init(i);
     }
     paging_enable();
