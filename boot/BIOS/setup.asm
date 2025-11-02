@@ -4,18 +4,25 @@ section .text
     global _start
 _start:
     mov [boot_disk], dl
-    mov ax, 0x0003
-    int 0x10
-    xor ax,ax
-    mov ds,ax
     mov ax,0x07c0
-    mov es,ax     
-    mov ax,0x1301
-    mov bx,0x0070
-    mov cx,25
-    mov dx,0x0100
-    mov bp,msg1
+    mov ds,ax
+    mov ax,0x0003
     int 0x10
+    mov ax,0x1000
+    mov ss,ax
+    mov sp,0
+    mov ax,0x0100
+    push ax
+    mov ax,0xB800
+    push ax
+    mov ax,0x7
+    push ax
+    mov ax,msg1
+    push ax
+    mov ax,17
+    push ax
+    push ax
+    call _printf
     jnc _move
     call _error
 _move:
@@ -34,19 +41,43 @@ _move:
 _jamp:
     jmp 0x0900:0x0000
 _error:
-    xor ax,ax
-    mov ds,ax
-    mov ax,0x07c0
-    mov es,ax       
-    mov ax,0x1301
-    mov bx,0x0040
-    mov cx,25
-    mov dx,0x0200
-    mov bp,msg2
-    int 0x10
     jmp $
+_printf:
+    pop di
+    pop cx
+    mov ax,cx
+    pop bx
+    sub ax,bx
+    pop si
+    add si,ax
+    mov dx,[si]
+    shl dx,8
+    pop bx
+    add dx,bx
+    shl ax,1
+    mov si,ax
+    pop bx
+    mov es,bx
+    mov word [es:si],dx
+    loop _printf
+    call _printf_int
+    ret
+_printf_int:
+    pop si
+    pop dx
+    sub ax,ax
+    mov bx,ax
+    mov ah,0x02
+    mov bh,0
+    int 0x10
+    push di
+    push si
+    ret
 boot_disk db 0
-msg1 db "Loading system...        "
-msg2 db "Loading error/failed  !!!"
+msg1 db 'Loading system...'
+msg2 db 'Loaded successfully!'
+msg3 db 'Load error!!!'
+times 0x1B8 - ($ - $$) db 0
+db 0x7E,0xDD,0x88,0x91,0x00,0x00,0x00,0x20,0x21,0x00,0x0C,0x1E,0x2B,0x33,0x00,0x08,0x00,0x00,0x00,0x80,0x0C,0x00,0x00,0x00
 times 510 - ($ - $$) db 0
 dw 0xAA55

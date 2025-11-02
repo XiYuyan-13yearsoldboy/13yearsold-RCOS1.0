@@ -71,25 +71,9 @@ init_vbe:
     popa
     ret 
 hd_kernel_move:
-    mov di, 16384          
-    mov word [dap_seg], 0x1000  
-    mov dword [dap_lba], 1228801
-    mov dword [dap_lba+4], 0 
-move_loop:
-    call move      
-    jc move_loop            
-    add word [dap_seg], 0x1000  
-    add dword [dap_lba], 128    
-    adc dword [dap_lba+4], 0    
-    dec di
-    jnz move_loop      
-    ret 
-move:
-    mov si, dap          
-    mov ah, 0x42        
-    mov dl, [boot_drive] 
-    int 0x13                    
-    ret 
+    mov ax,0x1000
+    mov ds,ax
+    mov es,ax
 memory_inf:
     mov ax,0x0500
     mov ds,ax

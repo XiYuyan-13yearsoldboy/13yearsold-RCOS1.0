@@ -17,11 +17,12 @@ idt_init:
     lea eax,default_int
     mov bx,ax
     shr eax,16
-    
+    mov cx,256
+    call set_idt
     lidt [idtr_inf]
     ret
 paging_enable:
-    mov eax,0x4004F000
+    mov eax,0x00100000
     mov cr3, eax
     mov eax, cr0
     or eax, 0x80000000
@@ -33,10 +34,16 @@ gdtr_inf:
 idtr_inf:
     dw 0x07FF
     dd 0x00007000
+set_idt:
+    
+    loop set_idt
+    ret
 idt:
     dd bx,0x0008
     dd ax,0x8E00
 default_int:
+    nop
+    iret
 stark_inf:
     dd 0XC0000000
     dw 0x0010
