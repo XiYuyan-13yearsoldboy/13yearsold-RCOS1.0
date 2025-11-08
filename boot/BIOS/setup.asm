@@ -11,17 +11,14 @@ _start:
     mov ax,0x1000
     mov ss,ax
     mov sp,0
-    mov ax,0x0100
-    push ax
     mov ax,0xB800
     push ax
     mov ax,0x7
     push ax
     mov ax,msg1
     push ax
-    mov ax,17
-    push ax
-    push ax
+    mov cx,17
+    push cx
     call _printf
     jnc _move
     call _error
@@ -44,7 +41,6 @@ _error:
     jmp $
 _printf:
     pop di
-    pop cx
     mov ax,cx
     pop bx
     sub ax,bx
@@ -60,18 +56,9 @@ _printf:
     mov es,bx
     mov word [es:si],dx
     loop _printf
-    call _printf_int
-    ret
-_printf_int:
-    pop si
-    pop dx
-    sub ax,ax
-    mov bx,ax
-    mov ah,0x02
-    mov bh,0
-    int 0x10
+    add si,2
+    mov word [es:si],0x0A0D
     push di
-    push si
     ret
 boot_disk db 0
 msg1 db 'Loading system...'
