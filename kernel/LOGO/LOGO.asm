@@ -1,5 +1,7 @@
+bits 32
 section .text
     global jmp_main
+    extern _main
 jmp_main:
     call _main
     lss esp,[stark_inf]
@@ -17,6 +19,8 @@ idt_init:
     lea eax,default_int
     mov bx,ax
     shr eax,16
+    mov [bx_str],bx
+    mov [ax_str],ax
     mov cx,256
     call set_idt
     lidt [idtr_inf]
@@ -39,8 +43,10 @@ set_idt:
     loop set_idt
     ret
 idt:
-    dd bx,0x0008
-    dd ax,0x8E00
+    bx_str dw 0x0000
+    dw 0x0008
+    ax_str dw 0x0000
+    dw 0x8E00
 default_int:
     nop
     iret
