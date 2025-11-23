@@ -5,16 +5,6 @@ section .text
 jmp_main:
     call _main
     lss esp,[stark_inf]
-gdt_init: 
-    mov eax,0x00001000
-    mov dword [eax],0x00000000
-    mov dword [eax+4],0x00000000
-    mov dword [eax+8],0x0000FFFF
-    mov dword [eax+12],0x00CF9A00
-    mov dword [eax+16],0x0000FFFF
-    mov dword [eax+20],0x00CF9200
-    lgdt [gdtr_inf]
-    ret
 idt_init:  
     lea eax,default_int
     mov bx,ax
@@ -32,9 +22,6 @@ paging_enable:
     or eax, 0x80000000
     mov cr0, eax
     ret
-gdtr_inf:
-    dw 0x00FF
-    dd 0x00001000
 idtr_inf:
     dw 0x07FF
     dd 0x00007000
@@ -42,16 +29,15 @@ set_idt:
     
     loop set_idt
     ret
-idt:
-    bx_str dw 0x0000
-    dw 0x0008
-    ax_str dw 0x0000
-    dw 0x8E00
+bx_str dw 0
+idt_sector dw 0x0008
+ax_str dw 0
+idt_attribute dw 0x8E00
 default_int:
     nop
     iret
 stark_inf:
-    dd 0XC0000000
+    dd 0XFFFFFFFF
     dw 0x0010
     dw 0x0000
 times 1048576 - ($ - $$) db 0

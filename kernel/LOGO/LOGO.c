@@ -7,7 +7,6 @@ It's great to write a OS and open source it
 */
 #include <stdint.h>
 #include <stdio.h>
-extern void gdt_init();
 extern void idt_init();
 extern void paging_enable();
 uint32_t *PG_address = (uint32_t*)0x00100000;
@@ -36,7 +35,6 @@ void paging_init(){
 }
 void main(){
     load_logo();
-    gdt_init();
     idt_init();
     paging_init();
 }
