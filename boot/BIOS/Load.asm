@@ -3,11 +3,9 @@ bits 16
 section .text
     global setup
 setup:
-    mov ax,0x0003
-    int 0x10
     mov ax,0x0000
     mov ds,ax
-    mov ax,0xB814
+    mov ax,0xB828
     mov es,ax
     mov si,msg1
     xor di,di

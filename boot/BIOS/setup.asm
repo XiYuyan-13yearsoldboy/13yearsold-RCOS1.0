@@ -26,7 +26,7 @@ _move:
 _jamp:
     mov ax,0x0000
     mov ds,ax
-    mov ax,0xB80A
+    mov ax,0xB814
     mov es,ax
     mov si,msg3
     xor di,di
@@ -36,7 +36,7 @@ _jamp:
 _error:
     mov ax,0x0000
     mov ds,ax
-    mov ax,0xB80A
+    mov ax,0xB814
     mov es,ax
     mov si,msg2
     xor di,di
