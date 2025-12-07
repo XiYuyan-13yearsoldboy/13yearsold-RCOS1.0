@@ -5,39 +5,145 @@ section .text
 setup:
     mov ax,0x0000
     mov ds,ax
-    mov ax,0xB828
     mov es,ax
-    mov si,msg1
-    xor di,di
-    mov cx,24
-    rep movsw
+    mov ax,0x1301
+    mov bx, 0x0007
+    mov dx, 0x0200
+    mov bp,msg1
+    mov cx,27
+    int 0x10
 move:
-    mov ax,0x0000
-    mov es,ax
     mov dx,0x0080
     mov cx,0x0009
     mov bx,0x8000
     mov ax,0x0240
     int 0x13
+    jnc get_inf
+    jc _error
 get_inf:
-    mov si,0x3000
+    mov ax,0xB828
+    mov es,ax
+    mov dword [es:0],0x07200720
+    mov dword [es:4],0x07200725
+    mov dword [es:160],0x07200720
+    mov dword [es:164],0x0720075B
+    mov dword [es:196],0x0720075D
     mov ah,0x0F
     int 0x10
-    mov [si],al
-
+    mov [0x3000],al
+    mov word [es:6],0x0739
+    mov word [es:166],0x073D
+    mov word [es:168],0x073D
+    mov ah,0x12
+    mov bl,0x10
+    int 0x10
+    mov [0x3001],bh
+    mov [0x3002],bl
+    mov [0x3003],ah
+    mov byte [es:6],0x32
+    mov word [es:8],0x0734
+    mov word [es:170],0x073D
+    mov word [es:172],0x073D
+    mov ah,0x03
+    int 0x10
+    mov [0x3004],dh
+    mov [0x3005],dl
+    mov [0x3006],ch
+    mov [0x3007],cl
+    mov byte [es:6],0x34
+    mov byte [es:8],0x35
+    mov word [es:174],0x073D
+    mov word [es:176],0x073D
+    mov ax,0xE801
+    int 0x15
+    mov [0x3008],ax
+    mov [0x300A],bx
+    mov [0x300C],cx
+    mov [0x300E],dx
+    mov byte [es:6],0x37
+    mov byte [es:7],0x38
+    mov word [es:178],0x073D
+    mov word [es:180],0x073D
+    mov ah,0x02
+    int 0x16
+    mov [0x300F],al
+    mov byte [es:6],0x39
+    mov byte [es:8],0x34
+    mov dword [es:182],0x073D073D
+    mov dword [es:186],0x073D073D
+    mov ah,0x08
+    int 0x13
+    mov [0x3010],dl
+    mov [0x3011],dh
+    mov [0x3012],ch
+    mov [0x3013],cl
+    mov byte [es:6],0x31
+    mov byte [es:8],0x30
+    mov word [es:10],0x0730
+    mov dword [es:190],0x073D073D
+    mov ax,0x0000
+    mov ds,ax
+    mov es,ax
+    mov ax,0x1301
+    mov bx, 0x0002
+    mov dx, 0x0300
+    mov bp,msg3
+    mov cx,24
+    int 0x10
+    mov bx,0x0005
+    mov dx,0x0600
+    mov bp,msg4
+    mov cx,28
+    int 0x10
+    mov ah, 0x00
+    int 0x16
+a20:
+    in al,0x92
+    or al,2
+    out 0x92,al
 gdt_init: 
     mov ax,0x1000
-    mov cs,ax
-    mov dword [cs:0],0x00000000
-    mov dword [cs:4],0x00000000
-    mov dword [cs:8],0x0000FFFF
-    mov dword [cs:12],0x00CF9A00
-    mov dword [cs:16],0x0000FFFF
-    mov dword [cs:20],0x00CF9200
+    mov es,ax
+    mov dword [es:0],0x00000000
+    mov dword [es:4],0x00000000
+    mov dword [es:8],0x0000FFFF
+    mov dword [es:12],0x00CF9A00
+    mov dword [es:16],0x0000FFFF
+    mov dword [es:20],0x00CF9200
     lgdt [gdtr_inf]
-    ret
+set_vbe:
+    mov ax, 0x4F01
+    mov cx, 0x105
+    mov di, mode_info
+    int 0x10
+    mov dword [mode_info+0x28],0xA0000000
+    mov ax, 0x4F02
+    mov bx, 0x105 | 0x4000
+    mov di, mode_info
+    int 0x10
+    cmp ax, 0x004F
+    jne _error
+    jnc _protect_mode
+_protect_mode:
+    mov eax, cr0
+    or eax, 0x1
+    mov cr0, eax
+    jmp 0x0800:0x0000
 gdtr_inf:
     dw 0x00FF
     dd 0x00001000
-msg1:
-    db 'G',0x07,'e',0x07,'t',0x07,' ',0x07,'i',0x07,'n',0x07,'f',0x07,'o',0x07,'r',0x07,'m',0x07,'a',0x07,'t',0x07,'i',0x07,'o',0x07,'n',0x07,' ',0x07,'a',0x07,'n',0x07,'d',0x07,' ',0x07,'L',0x07,'o',0x07,'a',0x07,'d',0x07
+_error:
+    mov ax,0x0000
+    mov ds,ax
+    mov es,ax
+    mov ax,0x1301
+    mov bx, 0x0004
+    mov dx, 0x0300
+    mov bp,msg2
+    mov cx,13
+    int 0x10
+msg1 db 'Load and get information...'
+msg2 db 'Load error!!!'
+msg3 db 'Get information succeed!'
+msg4 db 'Press any key to continue...'
+mode_info times 256 db 0

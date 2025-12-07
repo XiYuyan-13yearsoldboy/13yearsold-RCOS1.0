@@ -9,20 +9,13 @@ It's great to write a OS and open source it
 #include <stdio.h>
 extern void idt_init();
 extern void paging_enable();
+extern void load_logo();
 uint32_t *PG_address = (uint32_t*)0x00100000;
-struct v_m_i{
-    uint16_t mode;
-    uint16_t w;
-    uint16_t h;
-    uint8_t bitcolor;
-}video_mode_inf;
 void page_table_init(int x){
     uint32_t *pg_t_address = (uint32_t*)(0x00001000*(x+1)+0x00100000);
     for(int i=0;i<1024;i++){
         pg_t_address[i] = (0x00001000*i+0x00400000*x) | 0x3;
     }
-}
-void load_logo(){
 }
 void set_idt(){
 }

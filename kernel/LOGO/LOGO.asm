@@ -22,6 +22,8 @@ paging_enable:
     or eax, 0x80000000
     mov cr0, eax
     ret
+load_logo:
+    ret
 idtr_inf:
     dw 0x07FF
     dd 0x00007000
