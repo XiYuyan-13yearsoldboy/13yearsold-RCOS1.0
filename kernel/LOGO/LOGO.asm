@@ -6,15 +6,6 @@ jmp_main:
     call _main
     lss esp,[stark_inf]
 idt_init:  
-    lea eax,default_int
-    mov bx,ax
-    shr eax,16
-    mov [bx_str],bx
-    mov [ax_str],ax
-    mov cx,256
-    call set_idt
-    lidt [idtr_inf]
-    ret
 paging_enable:
     mov eax,0x00100000
     mov cr3, eax
@@ -27,19 +18,7 @@ load_logo:
 idtr_inf:
     dw 0x07FF
     dd 0x00007000
-set_idt:
-    
-    loop set_idt
-    ret
-bx_str dw 0
-idt_sector dw 0x0008
-ax_str dw 0
-idt_attribute dw 0x8E00
-default_int:
-    nop
-    iret
 stark_inf:
-    dd 0XFFFFFFFF
-    dw 0x0010
-    dw 0x0000
+    dd 0x10
+    dd 0XA0000000
 times 1048576 - ($ - $$) db 0

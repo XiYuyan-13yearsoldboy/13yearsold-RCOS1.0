@@ -14,7 +14,7 @@ setup:
     int 0x10
 move:
     mov dx,0x0080
-    mov cx,0x0009
+    mov cx,0x000A
     mov bx,0x8000
     mov ax,0x0240
     int 0x13
@@ -27,7 +27,7 @@ get_inf:
     mov dword [es:4],0x07200725
     mov dword [es:160],0x07200720
     mov dword [es:164],0x0720075B
-    mov dword [es:196],0x0720075D
+    mov dword [es:196],0x075D0720
     mov ah,0x0F
     int 0x10
     mov [0x3000],al
@@ -61,7 +61,7 @@ get_inf:
     mov [0x300C],cx
     mov [0x300E],dx
     mov byte [es:6],0x37
-    mov byte [es:7],0x38
+    mov byte [es:8],0x38
     mov word [es:178],0x073D
     mov word [es:180],0x073D
     mov ah,0x02
@@ -81,6 +81,7 @@ get_inf:
     mov byte [es:8],0x30
     mov word [es:10],0x0730
     mov dword [es:190],0x073D073D
+    mov dword [es:194],0x073D073D
     mov ax,0x0000
     mov ds,ax
     mov es,ax
@@ -125,10 +126,11 @@ set_vbe:
     jne _error
     jnc _protect_mode
 _protect_mode:
+    cli
     mov eax, cr0
     or eax, 0x1
     mov cr0, eax
-    jmp 0x0800:0x0000
+    jmp 0x8:0x8000
 gdtr_inf:
     dw 0x00FF
     dd 0x00001000
@@ -142,6 +144,7 @@ _error:
     mov bp,msg2
     mov cx,13
     int 0x10
+    jmp $
 msg1 db 'Load and get information...'
 msg2 db 'Load error!!!'
 msg3 db 'Get information succeed!'
