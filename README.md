@@ -13,15 +13,15 @@ graph LR
 A[引导层] --> B[BIOS/实模式]
 A --> C[UEFI/保护模式]
 B --> D[ASM引导扇区LBA0]
-D --> G[拓展引导扇区LBA1~8，进入保护模式]
+D --> G[拓展引导扇区LBA1~8,设置GDT,进入保护模式]
 C --> E[EDK2固件]
-E --> F[内核层]
+E --> F[logo部分，设置IDT，开启分页]
 G --> F
-H[内核层] --> I[加载LOGO，重新设置GDT,IDT,开启分页] 
+I[内核层] --> J[内核] 
 style G fill:#0F0,stroke:#000;
-style I fill:#FF4136,stroke:#000;
-style E fill:#FF4136,stroke:#000;
-style C fill:#FF4136,stroke:#000;
+style F fill:#F00,stroke:#000;
+style E fill:#00F,stroke:#000;
+style C fill:#00F,stroke:#000;
 style B fill:#0F0,stroke:#000;
 style D fill:#0F0,stroke:#000;
 ```
